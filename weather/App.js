@@ -1,5 +1,11 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import DateTimePicker from "@react-native-community/datetimepicker";
+
+// React는 component, api를 베이직하게 제공하기에, 추가적인 기능은 third-party library(제 3자) 패키지를 사용해야 함
+// expo에서 제공하는 패키지로 해결가능!(관리가 잘되고 버그가 적음)
+// https://docs.expo.dev/versions/latest/sdk/accelerometer/
 
 export default function App() {
   /**
@@ -16,10 +22,25 @@ export default function App() {
    * : CSS를 사용할 수 있음
    * : 일부 스타일은 사용할 수 없음(ex. border)
    * */
+
+  const [date, setDate] = useState(new Date(1598051730000));
+
+  const handleChange = (event, selectedDate) => {
+    const currentDate = selectedDate;
+    setDate(currentDate);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Hello!!</Text>
       <StatusBar style="light" />
+
+      <DateTimePicker
+        testID="dateTimePicker"
+        value={date}
+        is24Hour={true}
+        onChange={handleChange}
+      />
     </View>
   );
 }
