@@ -1,35 +1,62 @@
 import React, { useState, useEffect } from "react";
 
-import { StyleSheet, View, Text, ScrollView, Dimensions } from "react-native";
+// ActivityIndicator는 로딩중일 때 보여주는 컴포넌트
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  Dimensions,
+  ActivityIndicator,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as Location from "expo-location";
 
+const API_KEY = "784ab24ff2ed5d94d4288abed9e25d13";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 export default function App() {
   const [city, setCity] = useState("Loading...");
-  const [location, setLocation] = useState();
-  const [errorMsg, setErrorMsg] = useState(null);
+  const [days, setDays] = useState([]);
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync({
-        accuracy: 5,
-      });
-      if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-      }
-      const {
-        coords: { latitude, longitude },
-      } = await Location.getCurrentPositionAsync({ accuracy: 5 });
-      const location = await Location.reverseGeocodeAsync(
-        { latitude, longitude },
-        { useGoogleMaps: false }
-      );
-      setCity(location[0].city);
-    })();
+    getWeather();
   }, []);
+
+  const getWeather = async () => {
+    await askPermission();
+    const {
+      coords: { latitude, longitude },
+    } = await Location.getCurrentPositionAsync({ accuracy: 5 });
+
+    await getCity({ latitude, longitude });
+    getDays({ latitude, longitude });
+  };
+
+  const askPermission = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync({
+      accuracy: 5,
+    });
+    if (status !== "granted") {
+      throw new Error("Permission to access location was denied");
+    }
+  };
+
+  const getCity = async ({ latitude, longitude }) => {
+    const location = await Location.reverseGeocodeAsync(
+      { latitude, longitude },
+      { useGoogleMaps: false }
+    );
+    setCity(location[0].city);
+  };
+  const getDays = async ({ latitude, longitude }) => {
+    console.log("getDays", latitude, longitude);
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/onecall?lat=${latitude}&lon=${longitude}&exclude=alerts&appid=${API_KEY}&units=metric`
+    );
+    const json = await response.json();
+    setDays(json.daily);
+  };
 
   return (
     <View style={styles.container}>
@@ -47,18 +74,25 @@ export default function App() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.weather}
       >
-        <View style={styles.day}>
-          <Text style={styles.temp}>27</Text>
-          <Text style={styles.description}>Clouds</Text>
-        </View>
-        <View style={styles.day}>
-          <Text style={styles.temp}>27</Text>
-          <Text style={styles.description}>Clouds</Text>
-        </View>
-        <View style={styles.day}>
-          <Text style={styles.temp}>27</Text>
-          <Text style={styles.description}>Clouds</Text>
-        </View>
+        {days.length === 0 ? (
+          <View style={styles.day}>
+            <ActivityIndicator
+              color="white"
+              style={{ marginTop: 10 }}
+              size="large"
+            />
+          </View>
+        ) : (
+          days.map((day, index) => (
+            <View key={index} style={styles.day}>
+              <Text style={styles.temp}>
+                {parseFloat(day.temp.day).toFixed(1)}
+              </Text>
+              <Text style={styles.description}>{day.weather[0].main}</Text>
+              <Text style={styles.tinyText}>{day.weather[0].description}</Text>
+            </View>
+          ))
+        )}
       </ScrollView>
     </View>
   );
@@ -78,9 +112,6 @@ const styles = StyleSheet.create({
     fontSize: 68,
     fontWeight: "500",
   },
-  weather: {
-    // backgroundColor: "pink",
-  },
   day: {
     width: SCREEN_WIDTH,
     alignItems: "center",
@@ -92,5 +123,8 @@ const styles = StyleSheet.create({
   description: {
     marginTop: -30,
     fontSize: 60,
+  },
+  tinyText: {
+    fontSize: 20,
   },
 });
