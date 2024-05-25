@@ -7,8 +7,10 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Fontisto } from "@expo/vector-icons";
 
 import { theme } from "./colors";
 
@@ -42,6 +44,24 @@ export default function App() {
     setToDos(newToDos);
     await saveToDos(newToDos);
     setText("");
+  };
+
+  // Alert: 사용자에게 메시지를 표시하고 확인 또는 취소 버튼을 표시할 수 있는 경고창을 표시합니다.
+  const deleteToDo = (key) => {
+    Alert.alert("할일 삭제", "정말 삭제하시겠습니까?", [
+      { text: "취소하기" },
+      {
+        text: "삭제하기",
+        style: "destructive",
+        onPress: () => {
+          const newToDos = { ...toDos };
+          delete newToDos[key];
+
+          setToDos(newToDos);
+          saveToDos(newToDos);
+        },
+      },
+    ]);
   };
 
   return (
@@ -83,6 +103,9 @@ export default function App() {
               toDos[key].working === working && (
                 <View style={styles.toDo} key={key}>
                   <Text style={styles.toDoText}>{toDos[key].text}</Text>
+                  <TouchableOpacity onPress={() => deleteToDo(key)}>
+                    <Fontisto name="trash" size={18} color={theme.grey} />
+                  </TouchableOpacity>
                 </View>
               )
           )}
@@ -120,6 +143,9 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     borderRadius: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   toDoText: {
     color: "white",
