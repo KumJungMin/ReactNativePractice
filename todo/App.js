@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,27 +8,39 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { theme } from "./colors";
 
-// TextInput은 사용자가 텍스트를 입력할 수 있는 입력란을 제공합니다.
+const STORAGE_KEY = "@toDos";
 
+// TextInput은 사용자가 텍스트를 입력할 수 있는 입력란을 제공합니다.
 export default function App() {
   const [working, setWorking] = useState(true);
   const [text, setText] = useState("");
   const [toDos, setToDos] = useState({});
 
+  useEffect(() => {
+    loadToDos();
+  }, []);
+
   const travel = () => setWorking(false);
   const work = () => setWorking(true);
   const onChangeText = (payload) => setText(payload);
 
-  const addToDo = () => {
+  const saveToDos = async (toSave) => {
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+  };
+  const loadToDos = async () => {
+    const s = await AsyncStorage.getItem(STORAGE_KEY);
+    setToDos(JSON.parse(s));
+  };
+  const addToDo = async () => {
     if (text === "") return;
 
-    const newToDos = {
-      ...toDos,
-      [Date.now()]: { text, work: working },
-    };
+    const newToDos = { ...toDos, [Date.now()]: { text, working } };
     setToDos(newToDos);
+    await saveToDos(newToDos);
     setText("");
   };
 
@@ -61,15 +73,19 @@ export default function App() {
         onChangeText={onChangeText}
         value={text}
         returnKeyType="done"
-        placeholder={working ? "Add a To Do" : "Where do you want to go?"}
+        placeholder={working ? "할일" : "여행가고 싶은 곳"}
         style={styles.input}
       />
       <ScrollView>
-        {Object.keys(toDos).map((key) => (
-          <View style={styles.toDo} key={key}>
-            <Text style={styles.toDoText}>{toDos[key].text}</Text>
-          </View>
-        ))}
+        {toDos &&
+          Object.keys(toDos).map(
+            (key) =>
+              toDos[key].working === working && (
+                <View style={styles.toDo} key={key}>
+                  <Text style={styles.toDoText}>{toDos[key].text}</Text>
+                </View>
+              )
+          )}
       </ScrollView>
     </View>
   );
@@ -99,7 +115,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   toDo: {
-    backgroundColor: theme.grey,
+    backgroundColor: theme.toDoBg,
     marginBottom: 10,
     paddingVertical: 20,
     paddingHorizontal: 20,
@@ -108,6 +124,6 @@ const styles = StyleSheet.create({
   toDoText: {
     color: "white",
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: "600",
   },
 });
