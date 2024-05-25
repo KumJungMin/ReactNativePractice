@@ -14,9 +14,22 @@ import { theme } from "./colors";
 export default function App() {
   const [working, setWorking] = useState(true);
   const [text, setText] = useState("");
+  const [toDos, setToDos] = useState({});
+
   const travel = () => setWorking(false);
   const work = () => setWorking(true);
   const onChangeText = (payload) => setText(payload);
+
+  const addToDo = () => {
+    if (text === "") return;
+
+    const newToDos = Object.assign({}, toDos, {
+      [Date.now()]: { text, work: working },
+    });
+    setToDos(newToDos);
+    setText("");
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
@@ -39,9 +52,13 @@ export default function App() {
           </Text>
         </TouchableOpacity>
       </View>
+      {/* onSubmitEditing: 사용자가 입력한 텍스트를 제출할 때 호출되는 콜백 함수 */}
+      {/* returnKeyType: 키보드의 return 키를 눌렀을 때 어떤 동작을 할지 설정합니다. */}
       <TextInput
+        onSubmitEditing={addToDo}
         onChangeText={onChangeText}
         value={text}
+        returnKeyType="done"
         placeholder={working ? "Add a To Do" : "Where do you want to go?"}
         style={styles.input}
       />
