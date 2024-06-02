@@ -2,6 +2,7 @@
 // Button은 onPress 이벤트 핸들러를 받아서 버튼을 누르면 이벤트 핸들러가 실행된다.
 // Pressable은 onPress 이벤트 핸들러를 받아서 버튼을 누르고 떼는 순간, 누르고 있는 동안, 누르고 떼는 순간에 각각 이벤트 핸들러가 실행된다.
 import {
+  View,
   Pressable,
   StyleSheet,
   Text,
@@ -37,13 +38,14 @@ export default function LButton(props: LButtonProps) {
       style={({pressed}) => [
         styles.container,
         styles[variant],
-        styles[size],
         pressed && styles.pressed,
         disabled && styles.disabled,
       ]}
       disabled={disabled}
       {...rest}>
-      <Text style={[styles.text, styles[`${variant}Text`]]}>{label}</Text>
+      <View style={styles[size]}>
+        <Text style={[styles.text, styles[`${variant}Text`]]}>{label}</Text>
+      </View>
     </Pressable>
   );
 }
@@ -52,6 +54,7 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 3,
     justifyContent: 'center',
+    flexDirection: 'row',
   },
   disabled: {
     opacity: 0.5,
@@ -74,12 +77,14 @@ const styles = StyleSheet.create({
     paddingVertical: deviceHeight > 700 ? 15 : 10,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
   },
   medium: {
     width: '50%',
     paddingVertical: deviceHeight > 700 ? 12 : 8,
     alignItems: 'center',
     justifyContent: 'center',
+    flexDirection: 'row',
   },
   text: {
     fontSize: 16,
@@ -89,6 +94,6 @@ const styles = StyleSheet.create({
     color: colors.WHITE,
   },
   outlinedText: {
-    color: '#C4C4C4',
+    color: colors.PINK_Primary,
   },
 });
