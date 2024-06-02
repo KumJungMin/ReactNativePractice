@@ -34,10 +34,11 @@ export default function LButton(props: LButtonProps) {
   } = props;
   return (
     <Pressable
-      style={[
-        styles[variant],
+      style={({pressed}) => [
         styles.container,
+        styles[variant],
         styles[size],
+        pressed && styles.pressed,
         disabled && styles.disabled,
       ]}
       disabled={disabled}
@@ -54,6 +55,9 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
+  },
+  pressed: {
+    opacity: 0.7,
   },
   filled: {
     backgroundColor: colors.PINK_Primary,
