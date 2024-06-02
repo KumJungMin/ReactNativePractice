@@ -16,6 +16,11 @@ interface LButtonProps extends PressableProps {
   size?: 'medium' | 'large';
 }
 
+// Dimensions.get('window'), Dimensions.get('screen')의 차이(안드로이드만 해당)
+// get('window')는 화면의 크기를 반환한다.
+// get('screen')은 디바이스의 크기를 반환한다.
+const deviceHeight = Dimensions.get('screen').height;
+
 export default function LButton(props: LButtonProps) {
   const {label = '버튼', variant = 'filled', size = 'large', ...rest} = props;
   return (
@@ -43,13 +48,14 @@ const styles = StyleSheet.create({
   },
   large: {
     width: '100%',
-    paddingVertical: 15,
+    // deviceHeight로, 화면 사이즈별 버튼 크기 조절 대응
+    paddingVertical: deviceHeight > 700 ? 15 : 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   medium: {
     width: '50%',
-    paddingVertical: 12,
+    paddingVertical: deviceHeight > 700 ? 12 : 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
