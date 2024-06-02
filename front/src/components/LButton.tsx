@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import React from 'react';
 
-import {colors} from '../constants/colors';
+import {colors} from '../constants';
 
 interface LButtonProps extends PressableProps {
   label: string;
