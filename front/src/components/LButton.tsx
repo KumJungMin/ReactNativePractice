@@ -10,10 +10,13 @@ import {
 } from 'react-native';
 import React from 'react';
 
+import {colors} from '../constants/colors';
+
 interface LButtonProps extends PressableProps {
   label: string;
   variant?: 'filled' | 'outlined';
   size?: 'medium' | 'large';
+  disabled?: boolean;
 }
 
 // Dimensions.get('window'), Dimensions.get('screen')의 차이(안드로이드만 해당)
@@ -22,10 +25,22 @@ interface LButtonProps extends PressableProps {
 const deviceHeight = Dimensions.get('screen').height;
 
 export default function LButton(props: LButtonProps) {
-  const {label = '버튼', variant = 'filled', size = 'large', ...rest} = props;
+  const {
+    label = '버튼',
+    variant = 'filled',
+    size = 'large',
+    disabled = false,
+    ...rest
+  } = props;
   return (
     <Pressable
-      style={[styles[variant], styles.container, styles[size]]}
+      style={[
+        styles[variant],
+        styles.container,
+        styles[size],
+        disabled && styles.disabled,
+      ]}
+      disabled={disabled}
       {...rest}>
       <Text style={[styles.text, styles[`${variant}Text`]]}>{label}</Text>
     </Pressable>
@@ -37,12 +52,15 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     justifyContent: 'center',
   },
+  disabled: {
+    opacity: 0.5,
+  },
   filled: {
-    backgroundColor: '#C4C4C4',
+    backgroundColor: colors.PINK_Primary,
     padding: 10,
   },
   outlined: {
-    borderColor: '#C4C4C4',
+    borderColor: colors.PINK_Primary,
     borderWidth: 1,
     padding: 10,
   },
@@ -64,7 +82,7 @@ const styles = StyleSheet.create({
     fontWeight: 700,
   },
   filledText: {
-    color: 'white',
+    color: colors.WHITE,
   },
   outlinedText: {
     color: '#C4C4C4',
