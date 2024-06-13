@@ -1,13 +1,17 @@
-import { StyleSheet, SafeAreaView, Text } from 'react-native';
-import { Link } from 'expo-router';
+import { StyleSheet, Text, ScrollView, TouchableOpacity } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function App() {
   return (
-  <SafeAreaView style={styles.container}>
-    <Text style={styles.font}>
-      안녕!
-    </Text>
-    <Link href="/home">Home</Link>
+  <SafeAreaView>
+    <ScrollView contentContainerStyle={{ height: '100%'}}>
+      <Text style={styles.font}>Hello, world!</Text>
+      <StatusBar style="auto" />
+      <TouchableOpacity onPress={() => alert('Hello, world!')}>
+        <Text>Press me!</Text>
+      </TouchableOpacity>
+    </ScrollView>
   </SafeAreaView>
   );
 }
