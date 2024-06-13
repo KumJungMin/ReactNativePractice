@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const TabsLayout = () => {
+const BookMark = () => {
   return (
     <View>
-      <Text>_layout</Text>
+      <Text>bookmark</Text>
     </View>
   )
 }
 
-export default TabsLayout;
+export default BookMark;
